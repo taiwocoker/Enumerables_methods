@@ -27,26 +27,43 @@ module Enumerable
     result
   end
 
-  def my_all?
-    return to_enum(:my_all) unless block_given?
+  def my_all?(input = nil)
+    my_each do |x|
+      return false if block_given? && !yield(x)
 
-    result = my_select { |x| yield x }
-
-    length == result.length
+      if !block_given? && input.nil?
+        return false unless x
+      elsif input
+        return false unless input_check(x, input)
+      end
+    end
+    true
   end
 
-  def my_any?
-    return to_enum(:my_any) unless block_given?
+  def my_any?(input = nil)
+    my_each do |x|
+      return true if block_given? && yield(x)
 
-    result = my_select { |x| yield x }
-
-    result.length.positive?
+      if !block_given? && input.nil?
+        return true if x
+      elsif !block_given? && input
+        return true if input_check(x, input)
+      end
+    end
+    false
   end
 
-  def my_none?
-    return to_enum(:my_none) unless block_given?
+  def my_none?(input = nil)
+    my_each do |x|
+      return false if block_given? && yield(x)
 
-    !my_any?
+      if !block_given? && input.nil?
+        return false if x
+      elsif !block_given? && input
+        return false if input_check(x, input)
+      end
+    end
+    true
   end
 
   def my_count(count = nil)
