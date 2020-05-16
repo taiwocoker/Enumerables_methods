@@ -1,3 +1,5 @@
+# rubocop:disable Metrics/ModuleLength
+# rubocop:disable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
 module Enumerable
   def my_each
     return to_enum(:my_each) unless block_given?
@@ -27,41 +29,59 @@ module Enumerable
     result
   end
 
-  def my_all?(input = nil)
-    my_each do |x|
-      return false if block_given? && !yield(x)
-
-      if !block_given? && input.nil?
-        return false unless x
-      elsif input
-        return false unless input_check(x, input)
+  def my_all?(var = nil)
+    unless var.nil?
+      if var.is_a?(Regexp)
+        my_each { |val| return false unless val.match(var) }
+      elsif var.is_a?(Module)
+        my_each { |val| return false unless val.is_a?(var) }
+      else
+        my_each { |val| return false if val != var }
       end
+      return true
+    end
+    return true unless block_given?
+
+    my_each do |num|
+      return false unless yield(num)
     end
     true
   end
 
-  def my_any?(input = nil)
-    my_each do |x|
-      return true if block_given? && yield(x)
-
-      if !block_given? && input.nil?
-        return true if x
-      elsif !block_given? && input
-        return true if input_check(x, input)
+  def my_any?(var = nil)
+    unless var.nil?
+      if var.is_a?(Regexp)
+        my_each { |val| return true if val.match(var) }
+      elsif var.is_a?(Module)
+        my_each { |val| return true if val.is_a?(var) }
+      else
+        my_each { |val| return true if val == var }
       end
+      return false
+    end
+    return true unless block_given?
+
+    my_each do |num|
+      return true if yield(num)
     end
     false
   end
 
-  def my_none?(input = nil)
-    my_each do |x|
-      return false if block_given? && yield(x)
-
-      if !block_given? && input.nil?
-        return false if x
-      elsif !block_given? && input
-        return false if input_check(x, input)
+  def my_none?(var = nil)
+    unless var.nil?
+      if var.is_a?(Regexp)
+        my_each { |val| return false if val.match(var) }
+      elsif var.is_a?(Module)
+        my_each { |val| return false if val.is_a?(var) }
+      else
+        my_each { |val| return false if val == var }
       end
+      return true
+    end
+    return false unless block_given?
+
+    my_each do |num|
+      return false if yield(num)
     end
     true
   end
@@ -106,5 +126,5 @@ module Enumerable
     array.my_inject { |result, x| result * x }
   end
 end
-
-# rubocop: enable
+# rubocop:enable Metrics/ModuleLength
+# rubocop:enable Metrics/PerceivedComplexity,Metrics/CyclomaticComplexity
