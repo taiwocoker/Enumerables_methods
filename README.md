@@ -1,25 +1,36 @@
 # Enumerables_methods
 This Project is about rebuilding enumerables method in Ruby.
-# Enumerables
-This Project is about rebuilding Enumerable methods
-In this project, you will implement your own version of Ruby’s enumerable methods. Full task description: [https://github.com/TheOdinProject/curriculum/blob/master/ruby_programming/archive/basic_ruby/project_advanced_building_blocks.md#project-2-enumerable-methods.]
+Created Methods Listed Below
+my_each method instead of #each
+my_each_with_index method instead of #each_with_index
+my_select method instead of #select
+my_all? method instead of #all?
+my_any? method instead of #any?
+my_none? method instead of #none?
+my_count method instead of #count
+my_map method instead of #map
+my_inject method Implementation of #inject
 
-Built With
-RUBY
-Rubocop (Linter) with Stickler (CI Tool)
-Git, Github and VScode
-Setup
+
+## Built With
+  RUBY
+  Rubocop (Linter) with Stickler (CI Tool)
+  Git, Github and VScode
+
+## Setup
 Fork the repo to your remote repository.
 Clone or download the repository to your local machine.
 Copy the enumerable.rb file to irb and test the methods
-Authors
+
+## Authors
 👤 Taiwo Coker
 
 Github: @taiwocoker
 Twitter: @SelloCoker
 Linkedin: @taiwocoker
 Email: taiwofcoker@gmail.com
-🤝 Contributing
+
+## 🤝 Contributing
 Contributions, issues and feature requests are welcome!
 
 Feel free to check the issues page.
@@ -27,5 +38,5 @@ Feel free to check the issues page.
 Show your support
 Give a ⭐️ if you like this project!
 
-Acknowledgments
+## Acknowledgments
 TheOdinProject.com PROJECT: Advanced Building Blocks - Enumerables
