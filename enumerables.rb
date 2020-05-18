@@ -29,21 +29,18 @@ module Enumerable
     result
   end
 
-  def my_all?(var = nil)
-    unless var.nil?
-      if var.is_a?(Regexp)
-        my_each { |val| return false unless val.match(var) }
-      elsif var.is_a?(Module)
-        my_each { |val| return false unless val.is_a?(var) }
-      else
-        my_each { |val| return false if val != var }
+  def my_all?(pattern = nil)
+    if pattern.nil?
+      if block_given?
+        my_each { |value| return false unless yield(value) }
+      else my_each { |value| return false unless value }
       end
-      return true
-    end
-    return true unless block_given?
-
-    my_each do |num|
-      return false unless yield(num)
+    elsif pattern.is_a?(Regexp)
+      my_each { |value| return false unless value.match(pattern) }
+    elsif pattern.is_a?(Module)
+      my_each { |value| return false unless value.is_a?(pattern) }
+    else
+      my_each { |value| return false unless value == pattern }
     end
     true
   end
