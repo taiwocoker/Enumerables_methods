@@ -83,11 +83,19 @@ module Enumerable
     true
   end
 
-  def my_count(count = nil)
-    return count if count
-    return length unless block_given?
-
-    my_select { |x| yield x }.length
+  def my_count(argument = nil)
+    if block_given?
+      counter = 0
+      my_each do |i|
+        counter += 1 if yield(i)
+      end
+      counter
+    elsif !argument.nil?
+      output = my_select { |i| i == argument }
+      output.size
+    else
+      size
+    end
   end
 
   def my_map(my_proc = nil)
