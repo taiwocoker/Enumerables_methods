@@ -45,40 +45,34 @@ module Enumerable
     true
   end
 
-  def my_any?(var = nil)
-    unless var.nil?
-      if var.is_a?(Regexp)
-        my_each { |val| return true if val.match(var) }
-      elsif var.is_a?(Module)
-        my_each { |val| return true if val.is_a?(var) }
-      else
-        my_each { |val| return true if val == var }
+  def my_any?(pattern = nil)
+    if pattern.nil?
+      if block_given?
+        my_each { |value| return true if yield(value) }
+      else my_each { |value| return true if value }
       end
-      return false
-    end
-    return true unless block_given?
-
-    my_each do |num|
-      return true if yield(num)
+    elsif pattern.is_a?(Regexp)
+      my_each { |value| return true if value.match(pattern) }
+    elsif pattern.is_a?(Module)
+      my_each { |value| return true if value.is_a?(pattern) }
+    else
+      my_each { |value| return true if value == pattern }
     end
     false
   end
 
-  def my_none?(var = nil)
-    unless var.nil?
-      if var.is_a?(Regexp)
-        my_each { |val| return false if val.match(var) }
-      elsif var.is_a?(Module)
-        my_each { |val| return false if val.is_a?(var) }
-      else
-        my_each { |val| return false if val == var }
+  def my_none?(pattern = nil)
+    if pattern.nil?
+      if block_given?
+        my_each { |value| return false if yield(value) }
+      else my_each { |value| return false if value }
       end
-      return true
-    end
-    return false unless block_given?
-
-    my_each do |num|
-      return false if yield(num)
+    elsif pattern.is_a?(Regexp)
+      my_each { |value| return false if value.match(pattern) }
+    elsif pattern.is_a?(Module)
+      my_each { |value| return false if value.is_a?(pattern) }
+    else
+      my_each { |value| return false if value == pattern }
     end
     true
   end
@@ -98,31 +92,37 @@ module Enumerable
     end
   end
 
-  def my_map(my_proc = nil)
+  def my_map(a_proc = nil)
     array = []
-    my_each { |x| array << my_proc.call(x) } if my_proc
-    my_each { |x| array << yield(x) } if block_given?
-
+    if a_proc.is_a?(Proc)
+      my_each { |i| array.push(a_proc.call(i)) }
+    elsif block_given?
+      my_each { |i| array.push(yield(i)) }
+    else
+      return to_enum :my_map
+    end
     array
   end
 
-  def my_inject(accumulator = nil, operation = nil, &block)
-    block = case operation
-            when Symbol
-              ->(acc, value) { acc.send(operation, value) }
-            when nil
-              block
-            else
-              raise ArgumentError, 'the operation provided must be a symbol'
-            end
-    if accumulator.nil?
-      ignore_first = true
-      accumulator = first
+  def my_inject(arg1 = nil, arg2 = nil)
+    to_a unless is_a?(Array)
+    accumulator = nil
+    operation = nil
+
+    if arg1.is_a?(Numeric)
+      accumulator = arg1
+      operation = arg2 if arg2.is_a?(Symbol)
     end
-    index = 0
-    each do |element|
-      accumulator = block.call(accumulator, element) unless ignore_first && index.zero?
-      index += 1
+    operation = arg1 if arg1.is_a?(Symbol)
+
+    if !operation.nil?
+      my_each do |element|
+        accumulator = accumulator ? accumulator.send(operation, element) : element
+      end
+    else
+      my_each do |element|
+        accumulator = accumulator ? yield(accumulator, element) : element
+      end
     end
     accumulator
   end
